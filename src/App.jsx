@@ -45,6 +45,41 @@ const AdminFallback = () => (
   </div>
 );
 
+/** Fallback si la page d'accueil crash (ex: removeChild quand l'API est injoignable). */
+const HomePageErrorFallback = () => (
+  <div className="max-w-lg mx-auto px-4 py-16 text-center">
+    <p className="text-gray-600 mb-4">Le contenu de cette page est temporairement indisponible.</p>
+    <p className="text-sm text-gray-500 mb-6">Vérifiez votre connexion ou réessayez plus tard.</p>
+    <button
+      type="button"
+      onClick={() => window.location.reload()}
+      className="inline-flex bg-[#fd4d08] hover:bg-[#e64507] text-white font-semibold px-6 py-2 rounded-lg"
+    >
+      Recharger la page
+    </button>
+  </div>
+);
+
+const GlobalErrorFallback = () => (
+  <div className="p-8 text-center">
+    <p className="text-gray-600 mb-4">Une erreur s&apos;est produite.</p>
+    <button type="button" onClick={() => { window.location.href = '/'; }} className="text-[#fd4d08] hover:underline">
+      Retour à l&apos;accueil
+    </button>
+  </div>
+);
+
+const DesignsSliderErrorFallback = () => (
+  <div className="py-12 text-center text-gray-500">Designs temporairement indisponibles.</div>
+);
+
+const AdminDashboardErrorFallback = () => (
+  <div className="p-8 text-center text-gray-600">
+    Erreur de chargement du dashboard.{' '}
+    <a href="/" className="text-[#fd4d08] hover:underline">Retour à l&apos;accueil</a>
+  </div>
+);
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
@@ -62,23 +97,26 @@ const App = () => {
       <ScrollToTop />
       <div className="min-h-screen bg-white">
         <Header />
-        <Routes>
+        <ErrorBoundary fallback={<GlobalErrorFallback />}>
+          <Routes>
           <Route path="/" element={
-            <div>
-              <Hero />
-              <SearchBar 
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-                filters={filters}
-              />
-              <ErrorBoundary>
-                <DesignsListSlider searchTerm={searchTerm} activeFilter={activeFilter} />
-              </ErrorBoundary>
-              <PackSection />
-              <Features />
-            </div>
+            <ErrorBoundary fallback={<HomePageErrorFallback />}>
+              <div>
+                <Hero />
+                <SearchBar 
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                  filters={filters}
+                />
+                <ErrorBoundary fallback={<DesignsSliderErrorFallback />}>
+                  <DesignsListSlider searchTerm={searchTerm} activeFilter={activeFilter} />
+                </ErrorBoundary>
+                <PackSection />
+                <Features />
+              </div>
+            </ErrorBoundary>
           } />
           <Route path="/designs" element={
             <div>
@@ -104,7 +142,7 @@ const App = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/payment/success" element={<CheckoutSuccessPage />} />
           <Route path="/payment/cancel" element={<CheckoutCancelPage />} />
-          <Route path="/admin" element={<AdminRoute><ErrorBoundary fallback={<div className="p-8 text-center text-gray-600">Erreur de chargement du dashboard. <a href="/" className="text-[#fd4d08] hover:underline">Retour à l&apos;accueil</a></div>}><Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense></ErrorBoundary>} />
+          <Route path="/admin" element={<AdminRoute><ErrorBoundary fallback={<AdminDashboardErrorFallback />}><Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense></ErrorBoundary></AdminRoute>} />
           <Route path="/admin/designs" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesigns /></Suspense></AdminRoute>} />
           <Route path="/admin/designs/new" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesignForm /></Suspense></AdminRoute>} />
           <Route path="/admin/designs/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesignForm /></Suspense></AdminRoute>} />
@@ -123,7 +161,8 @@ const App = () => {
           <Route path="/admin/downloads" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDownloads /></Suspense></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUsers /></Suspense></AdminRoute>} />
           <Route path="/admin/users/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUserForm /></Suspense></AdminRoute>} />
-        </Routes>
+          </Routes>
+        </ErrorBoundary>
         <Footer />
       </div>
     </Router>
