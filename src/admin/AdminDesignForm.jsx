@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { resolveApiUrl } from '../utils/api';
 
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL } from '../utils/api';
 
 const emptyForm = {
   title: '',

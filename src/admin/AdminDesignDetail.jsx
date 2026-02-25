@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2, ExternalLink, Download, Image as ImageIcon, FileText } from 'lucide-react';
-import { resolveApiUrl, getDesignImages } from '../utils/api';
-
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL, resolveApiUrl, getDesignImages } from '../utils/api';
 
 const AdminDesignDetail = () => {
   const { id } = useParams();

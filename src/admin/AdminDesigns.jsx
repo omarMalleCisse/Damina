@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { resolveApiUrl } from '../utils/api';
 
-const API_BASE_URL = 'http://localhost:8000';
+import { API_BASE_URL } from '../utils/api';
 
 const normalizeDesigns = (payload) => {
   if (Array.isArray(payload)) return payload;

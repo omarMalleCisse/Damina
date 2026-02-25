@@ -15,8 +15,8 @@ import {
   Area,
 } from 'recharts';
 import ChartContainer from './ChartContainer';
-
-const API_BASE_URL = 'http://localhost:8000';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { API_BASE_URL } from '../utils/api';
 
 const getToken = () =>
   localStorage.getItem('access_token') ||
@@ -270,9 +270,11 @@ const AdminDashboard = () => {
           </div>
         </section>
 
-        {/* Graphiques avancés : Barres, Donut, Top designs */}
+        {/* Graphiques avancés : uniquement si pas d'erreur API (évite removeChild quand backend injoignable) */}
+        {!error && (
         <section className="mb-8 space-y-6">
           <h2 className="text-lg font-semibold text-gray-900">Statistiques en graphiques</h2>
+          <ErrorBoundary fallback={<div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center text-amber-800 text-sm">Graphiques temporairement indisponibles.</div>}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 shadow-sm">
               <h3 className="text-sm font-medium text-gray-600 mb-4">Vue d&apos;ensemble (barres)</h3>
@@ -373,7 +375,9 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
+          </ErrorBoundary>
         </section>
+        )}
 
         <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm">
