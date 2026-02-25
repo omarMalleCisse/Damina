@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
@@ -14,21 +14,6 @@ import MyPackOrdersPage from './pages/MyPackOrdersPage';
 import { DesignCatigory } from './pages/DesignCatigory';
 import { Toaster } from 'react-hot-toast';
 import PackSection from './components/PackSection/PackSection';
-import AdminDashboard from './admin/AdminDashboard';
-import AdminDesigns from './admin/AdminDesigns';
-import AdminDesignDetail from './admin/AdminDesignDetail';
-import AdminCategories from './admin/AdminCategories';
-import AdminDesignForm from './admin/AdminDesignForm';
-import AdminCategoryForm from './admin/AdminCategoryForm';
-import AdminFeatures from './admin/AdminFeatures';
-import AdminFeatureForm from './admin/AdminFeatureForm';
-import AdminPacks from './admin/AdminPacks';
-import AdminPackForm from './admin/AdminPackForm';
-import AdminPackOrders from './admin/AdminPackOrders';
-import AdminOrders from './admin/AdminOrders';
-import AdminDownloads from './admin/AdminDownloads';
-import AdminUsers from './admin/AdminUsers';
-import AdminUserForm from './admin/AdminUserForm';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ContactPage from './pages/ContactPage';
@@ -37,6 +22,28 @@ import CheckoutCancelPage from './pages/CheckoutCancelPage';
 import AdminRoute from './components/AdminRoute';
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
+
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'));
+const AdminDesigns = lazy(() => import('./admin/AdminDesigns'));
+const AdminDesignDetail = lazy(() => import('./admin/AdminDesignDetail'));
+const AdminCategories = lazy(() => import('./admin/AdminCategories'));
+const AdminDesignForm = lazy(() => import('./admin/AdminDesignForm'));
+const AdminCategoryForm = lazy(() => import('./admin/AdminCategoryForm'));
+const AdminFeatures = lazy(() => import('./admin/AdminFeatures'));
+const AdminFeatureForm = lazy(() => import('./admin/AdminFeatureForm'));
+const AdminPacks = lazy(() => import('./admin/AdminPacks'));
+const AdminPackForm = lazy(() => import('./admin/AdminPackForm'));
+const AdminPackOrders = lazy(() => import('./admin/AdminPackOrders'));
+const AdminOrders = lazy(() => import('./admin/AdminOrders'));
+const AdminDownloads = lazy(() => import('./admin/AdminDownloads'));
+const AdminUsers = lazy(() => import('./admin/AdminUsers'));
+const AdminUserForm = lazy(() => import('./admin/AdminUserForm'));
+
+const AdminFallback = () => (
+  <div className="flex items-center justify-center min-h-[200px]">
+    <span className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-[#fd4d08] inline-block" aria-hidden />
+  </div>
+);
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -97,25 +104,25 @@ const App = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/payment/success" element={<CheckoutSuccessPage />} />
           <Route path="/payment/cancel" element={<CheckoutCancelPage />} />
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/designs" element={<AdminRoute><AdminDesigns /></AdminRoute>} />
-          <Route path="/admin/designs/new" element={<AdminRoute><AdminDesignForm /></AdminRoute>} />
-          <Route path="/admin/designs/:id/edit" element={<AdminRoute><AdminDesignForm /></AdminRoute>} />
-          <Route path="/admin/designs/:id" element={<AdminRoute><AdminDesignDetail /></AdminRoute>} />
-          <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
-          <Route path="/admin/categories/new" element={<AdminRoute><AdminCategoryForm /></AdminRoute>} />
-          <Route path="/admin/categories/:id/edit" element={<AdminRoute><AdminCategoryForm /></AdminRoute>} />
-          <Route path="/admin/features" element={<AdminRoute><AdminFeatures /></AdminRoute>} />
-          <Route path="/admin/features/new" element={<AdminRoute><AdminFeatureForm /></AdminRoute>} />
-          <Route path="/admin/features/:id/edit" element={<AdminRoute><AdminFeatureForm /></AdminRoute>} />
-          <Route path="/admin/packs" element={<AdminRoute><AdminPacks /></AdminRoute>} />
-          <Route path="/admin/packs/new" element={<AdminRoute><AdminPackForm /></AdminRoute>} />
-          <Route path="/admin/packs/:id/edit" element={<AdminRoute><AdminPackForm /></AdminRoute>} />
-          <Route path="/admin/pack-orders" element={<AdminRoute><AdminPackOrders /></AdminRoute>} />
-          <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
-          <Route path="/admin/downloads" element={<AdminRoute><AdminDownloads /></AdminRoute>} />
-          <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-          <Route path="/admin/users/:id/edit" element={<AdminRoute><AdminUserForm /></AdminRoute>} />
+          <Route path="/admin" element={<AdminRoute><ErrorBoundary fallback={<div className="p-8 text-center text-gray-600">Erreur de chargement du dashboard. <a href="/" className="text-[#fd4d08] hover:underline">Retour à l&apos;accueil</a></div>}><Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense></ErrorBoundary>} />
+          <Route path="/admin/designs" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesigns /></Suspense></AdminRoute>} />
+          <Route path="/admin/designs/new" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesignForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/designs/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesignForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/designs/:id" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDesignDetail /></Suspense></AdminRoute>} />
+          <Route path="/admin/categories" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminCategories /></Suspense></AdminRoute>} />
+          <Route path="/admin/categories/new" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminCategoryForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/categories/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminCategoryForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/features" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminFeatures /></Suspense></AdminRoute>} />
+          <Route path="/admin/features/new" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminFeatureForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/features/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminFeatureForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/packs" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminPacks /></Suspense></AdminRoute>} />
+          <Route path="/admin/packs/new" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminPackForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/packs/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminPackForm /></Suspense></AdminRoute>} />
+          <Route path="/admin/pack-orders" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminPackOrders /></Suspense></AdminRoute>} />
+          <Route path="/admin/orders" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminOrders /></Suspense></AdminRoute>} />
+          <Route path="/admin/downloads" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDownloads /></Suspense></AdminRoute>} />
+          <Route path="/admin/users" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUsers /></Suspense></AdminRoute>} />
+          <Route path="/admin/users/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUserForm /></Suspense></AdminRoute>} />
         </Routes>
         <Footer />
       </div>
