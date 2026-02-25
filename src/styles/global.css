@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8f8f8;
+  color: #222;
+}
+
+/* Hero background and responsive adjustments */
+.hero-section {
+  /* use the provided image in public/assets/image/ (encode spaces) */
+  background-image: url("/assets/image/image%20de%20hero.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  /* reduced size to make the hero image a bit smaller */
+  background-size: 35%;
+  background-color: #ffffff;
+}
+
+/* subtle overlay to improve text contrast on top of the image */
+/* No overlay: user requested to remove opacity so hero image is shown without an overlay */
+
+/* visually hidden helper for accessibility (if Tailwind's sr-only isn't present) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Hide scrollbars but keep scroll behavior */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Small screens: image en avant, puis contenu */
+@media (max-width: 640px) {
+  .hero-section {
+    padding-top: 1.5rem;
+    padding-bottom: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* pas de background sur mobile : l’image visible est mise en avant */
+    background-image: none;
+    background-color: #fff;
+  }
+
+  .hero-content {
+    order: 1;
+    width: 100%;
+  }
+}
+
+/* Image hero visible uniquement sur petits écrans, avant le texte */
+.hero-mobile-image {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .hero-mobile-image {
+    display: block;
+    order: 0;
+    width: 88%;
+    max-width: 320px;
+    height: auto;
+    margin: 0 auto 1.5rem;
+    object-fit: contain;
+    object-position: center;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
+    border-radius: 1rem;
+  }
+}
+
+/* Medium screens: moderate size */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-section {
+    background-size: 55%;
+    background-position: center bottom;
+  }
+}

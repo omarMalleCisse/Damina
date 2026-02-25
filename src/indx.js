@@ -1,0 +1,1 @@
+export  const banier = "./public/banier1.png"
