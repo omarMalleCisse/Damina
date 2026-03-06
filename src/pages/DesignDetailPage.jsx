@@ -279,10 +279,13 @@ const DesignDetailPage = () => {
             )}
           </div>
 
-          {/* CTA principal : Acheter (PayTech) ou Télécharger gratuitement */}
+          {/* CTA principal : design premium = payer avec PayTech avant téléchargement ; gratuit = téléchargement direct */}
           <div className="flex flex-col gap-3">
             {design.is_premium ? (
               <>
+                <p className="text-sm text-gray-600">
+                  Design premium — paiement PayTech (Orange Money, Wave, etc.) requis pour télécharger.
+                </p>
                 {payError && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                     {payError}
@@ -302,7 +305,7 @@ const DesignDetailPage = () => {
                   ) : (
                     <span className="inline-flex items-center gap-2">
                       <Download className="w-6 h-6 shrink-0" />
-                      Acheter ce design
+                      Payer avec PayTech puis télécharger
                     </span>
                   )}
                 </button>

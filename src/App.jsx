@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
 import SearchBar from './components/SearchBar/SearchBar';
@@ -7,7 +7,8 @@ import DesignsList, { DesignsListSlider } from './components/DesignsList';
 import Features from './components/Features/Features';
 import Footer from './components/Footer/Footer';
 import DesignDetailPage from './pages/DesignDetailPage';
-import DownloadPage from './pages/DownloadPage';
+import DesignDownloadPage from './pages/DesignDownloadPage';
+import DownloadsPage from './pages/DownloadsPage';
 import OrdersPage from './pages/OrdersPage';
 import PackOrderPage from './pages/PackOrderPage';
 import MyPackOrdersPage from './pages/MyPackOrdersPage';
@@ -38,6 +39,7 @@ const AdminOrders = lazy(() => import('./admin/AdminOrders'));
 const AdminDownloads = lazy(() => import('./admin/AdminDownloads'));
 const AdminUsers = lazy(() => import('./admin/AdminUsers'));
 const AdminUserForm = lazy(() => import('./admin/AdminUserForm'));
+const AdminContact = lazy(() => import('./admin/AdminContact'));
 
 const AdminFallback = () => (
   <div className="flex items-center justify-center min-h-[200px]">
@@ -77,6 +79,30 @@ const AdminDashboardErrorFallback = () => (
   <div className="p-8 text-center text-gray-600">
     Erreur de chargement du dashboard.{' '}
     <a href="/" className="text-[#fd4d08] hover:underline">Retour à l&apos;accueil</a>
+  </div>
+);
+
+const DesignDownloadErrorFallback = () => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md text-center">
+      <p className="text-gray-700 mb-4">Une erreur s&apos;est produite sur la page de téléchargement.</p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => { window.history.back(); }}
+          className="inline-flex px-5 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50"
+        >
+          Retour
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.reload(); }}
+          className="inline-flex px-5 py-2.5 bg-[#fd4d08] text-white font-medium rounded-lg hover:bg-[#e04300]"
+        >
+          Réessayer
+        </button>
+      </div>
+    </div>
   </div>
 );
 
@@ -133,7 +159,8 @@ const App = () => {
          
           <Route path="/categories/:category" element={<DesignCatigory/>} />
           <Route path="/designs/:id" element={<DesignDetailPage />} />
-          <Route path="/designs/:id/download" element={<DownloadPage />} />
+          <Route path="/designs/:id/download" element={<ErrorBoundary fallback={<DesignDownloadErrorFallback />}><DesignDownloadPage /></ErrorBoundary>} />
+          <Route path="/downloads" element={<DownloadsPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/pack-order" element={<PackOrderPage />} />
           <Route path="/mes-commandes-pack" element={<MyPackOrdersPage />} />
@@ -159,8 +186,10 @@ const App = () => {
           <Route path="/admin/pack-orders" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminPackOrders /></Suspense></AdminRoute>} />
           <Route path="/admin/orders" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminOrders /></Suspense></AdminRoute>} />
           <Route path="/admin/downloads" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminDownloads /></Suspense></AdminRoute>} />
+          <Route path="/admin/contact" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminContact /></Suspense></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUsers /></Suspense></AdminRoute>} />
           <Route path="/admin/users/:id/edit" element={<AdminRoute><Suspense fallback={<AdminFallback />}><AdminUserForm /></Suspense></AdminRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
         <Footer />

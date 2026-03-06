@@ -186,6 +186,7 @@ const AdminDashboard = () => {
             <Link to="/admin/features" className="text-[#fd4d08] font-medium hover:underline">Features</Link>
             <Link to="/admin/users" className="text-[#fd4d08] font-medium hover:underline">Utilisateurs</Link>
             <Link to="/admin/downloads" className="text-[#fd4d08] font-medium hover:underline">Téléchargements</Link>
+            <Link to="/admin/contact" className="text-[#fd4d08] font-medium hover:underline">Messages contact</Link>
             <Link to="/admin/orders" className="text-[#fd4d08] font-medium hover:underline">Commandes</Link>
             <Link to="/admin/packs" className="text-[#fd4d08] font-medium hover:underline">Packs</Link>
           </nav>
@@ -568,6 +569,21 @@ const AdminDashboard = () => {
                 className="inline-flex items-center rounded-lg bg-[#fd4d08] text-white px-3 py-2 text-xs sm:text-sm font-medium hover:bg-[#fda708]"
               >
                 Voir l'historique
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm">
+            <div className="text-xs sm:text-sm text-gray-500">Messages contact</div>
+            <div className="mt-1.5 sm:mt-2 text-xl sm:text-2xl font-semibold text-gray-900">
+              Formulaire de contact
+            </div>
+            <div className="mt-3 sm:mt-4 flex flex-wrap gap-2">
+              <Link
+                to="/admin/contact"
+                className="inline-flex items-center rounded-lg bg-[#fd4d08] text-white px-3 py-2 text-xs sm:text-sm font-medium hover:bg-[#fda708]"
+              >
+                Voir les messages
               </Link>
             </div>
           </div>

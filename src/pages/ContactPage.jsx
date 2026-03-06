@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { CenteredCard } from '../components/layout';
 import { Button, Input, Textarea, Card } from '../components/ui';
+import { contactAPI, authAPI } from '../utils/api';
+import { getToken } from '../utils/auth';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ContactPage = () => {
   const [form, setForm] = useState({
@@ -11,30 +15,60 @@ const ContactPage = () => {
     subject: '',
     message: ''
   });
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) return;
+    authAPI.me(token).then((user) => {
+      if (!user) return;
+      setForm((prev) => ({
+        ...prev,
+        name: user.full_name || user.name || user.username || prev.name || '',
+        email: user.email || prev.email || '',
+        phone: user.phone || user.phone_number || prev.phone || ''
+      }));
+    }).catch(() => {});
+  }, []);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validate = () => {
+    const err = {};
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const subject = form.subject.trim();
+    const message = form.message.trim();
+    if (!name) err.name = 'Le nom est requis.';
+    if (!email) err.email = "L'email est requis.";
+    else if (!EMAIL_REGEX.test(email)) err.email = 'Format d\'email invalide.';
+    if (!subject) err.subject = 'Le sujet est requis.';
+    if (!message) err.message = 'Le message est requis.';
+    setFieldErrors(err);
+    return Object.keys(err).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
-    setLoading(true);
+    if (!validate()) return;
 
+    setLoading(true);
     try {
-      // TODO: Appeler votre API de contact ici
-      // await contactAPI.send(form);
-      
-      // Simulation d'envoi
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+      await contactAPI.send(form);
       setSuccess(true);
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
+      setFieldErrors({});
     } catch (err) {
       setError(err?.message || 'Erreur lors de l\'envoi du message. Veuillez réessayer.');
     } finally {
@@ -148,6 +182,7 @@ const ContactPage = () => {
                   onChange={handleChange}
                   required
                   placeholder="Votre nom"
+                  error={fieldErrors.name}
                 />
                 <Input
                   label="Email"
@@ -157,6 +192,7 @@ const ContactPage = () => {
                   onChange={handleChange}
                   required
                   placeholder="votre@email.com"
+                  error={fieldErrors.email}
                 />
               </div>
 
@@ -176,6 +212,7 @@ const ContactPage = () => {
                   onChange={handleChange}
                   required
                   placeholder="Objet de votre message"
+                  error={fieldErrors.subject}
                 />
               </div>
 
@@ -187,6 +224,7 @@ const ContactPage = () => {
                 required
                 rows={6}
                 placeholder="Décrivez votre demande ou votre question..."
+                error={fieldErrors.message}
               />
 
               <Button

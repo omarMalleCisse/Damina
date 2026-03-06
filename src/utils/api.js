@@ -1,4 +1,4 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 let unauthorizedHandler = null;
 
@@ -121,6 +121,77 @@ export const designsAPI = {
     request(`/api/designs/${id}`, { method: 'PUT', body: payload, token }),
   remove: (id, token) => request(`/api/designs/${id}`, { method: 'DELETE', token }),
   download: (id) => request(`/api/designs/${id}/download`, { method: 'POST' }),
+  /**
+   * Appelle POST /api/designs/:id/download avec le token. Retourne { ok, status, blob?, json? } sans lever d'exception.
+   * - 200 : blob contient le fichier.
+   * - 402 : design premium non payé, json peut contenir le détail.
+   */
+  requestDownload: async (id, token) => {
+    const res = await fetch(`${API_BASE_URL}/api/designs/${id}/download`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    if (res.status === 401 && typeof unauthorizedHandler === 'function') unauthorizedHandler();
+    let blob = null;
+    let json = null;
+    let disposition = null;
+    if (res.ok) {
+      disposition = res.headers.get('Content-Disposition');
+      blob = await res.blob();
+    } else {
+      try {
+        const text = await res.text();
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        json = null;
+      }
+    }
+    return { ok: res.ok, status: res.status, blob, json, disposition };
+  },
+
+  /**
+   * Télécharge un seul fichier du design (GET /api/designs/:id/files/:fileIndex/download).
+   * Déclenche le téléchargement direct (blob + Content-Disposition).
+   * suggestedFilename : nom ou URL du fichier (ex. "design.dst") pour extraire l'extension si le serveur n'envoie pas Content-Disposition.
+   */
+  getFileDownload: async (designId, fileIndex, token, suggestedFilename = null) => {
+    const res = await fetch(
+      `${API_BASE_URL}/api/designs/${designId}/files/${fileIndex}/download`,
+      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+    );
+    if (res.status === 401 && typeof unauthorizedHandler === 'function') unauthorizedHandler();
+    if (!res.ok) {
+      let msg = 'Téléchargement refusé.';
+      try {
+        const data = await res.json().catch(() => ({}));
+        msg = data?.detail ?? data?.message ?? msg;
+      } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    const blob = await res.blob();
+    if (blob.size === 0) {
+      throw new Error('Le fichier reçu est vide. Réessayez ou contactez le support.');
+    }
+    const disposition = res.headers.get('Content-Disposition');
+    const filenameMatch = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";\n]+)"?/i) ?? disposition?.match(/filename="?([^";]+)"?/i);
+    let filename = filenameMatch?.[1]?.trim() || null;
+    if (!filename || !filename.includes('.')) {
+      const ext = suggestedFilename && typeof suggestedFilename === 'string'
+        ? suggestedFilename.split('.').pop()?.replace(/\?.*$/, '').toLowerCase() || 'bin'
+        : 'bin';
+      filename = filename?.replace(/\?.*$/, '') || `design-${designId}-${fileIndex}.${ext}`;
+      if (!filename.includes('.')) filename = `design-${designId}-${fileIndex}.${ext}`;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+  },
+
   /** Vérifie l'accès au téléchargement (pour design premium). Retourne { allowed, status } ; si status === 402, paiement requis. */
   checkDownloadAccess: (id, token) =>
     fetch(`${API_BASE_URL}/api/designs/${id}/download`, {
@@ -352,6 +423,42 @@ export const paymentsAPI = {
     request('/api/payments/create', { method: 'POST', body: payload, token }),
   getById: (paymentId, token) =>
     request(`/api/payments/${paymentId}`, { token })
+};
+
+/** Contact : envoi public + liste admin (token). */
+export const contactAPI = {
+  /** Liste des messages (admin). GET /api/contact avec Bearer token. */
+  list: (token) =>
+    request('/api/contact', { token }).then((data) => {
+      if (Array.isArray(data)) return data;
+      return data?.items ?? data?.messages ?? [];
+    }),
+
+  send: async (data) => {
+    const body = {
+      name: String(data.name ?? '').trim(),
+      email: String(data.email ?? '').trim(),
+      phone: data.phone != null && String(data.phone).trim() !== '' ? String(data.phone).trim() : null,
+      subject: String(data.subject ?? '').trim(),
+      message: String(data.message ?? '').trim()
+    };
+    const res = await fetch(`${API_BASE_URL}/api/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      let message = 'Erreur lors de l\'envoi du message.';
+      try {
+        const err = await res.json();
+        message = err?.detail || err?.message || message;
+      } catch {
+        // ignore
+      }
+      throw new Error(message);
+    }
+    return res.json();
+  }
 };
 
 /** Créer une commande à partir du panier (si le backend expose cet endpoint). Sinon, utilise ordersAPI.create. */

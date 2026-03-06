@@ -267,9 +267,17 @@ const AdminDesigns = () => {
                               </span>
                             )}
                             {(Array.isArray(design.download_files) && design.download_files.length > 0) && (
-                              <span className="bg-gray-100 px-2 py-0.5 rounded">
-                                {design.download_files.length} fichier{design.download_files.length > 1 ? 's' : ''}
-                              </span>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="bg-gray-100 px-2 py-0.5 rounded text-xs">
+                                  {design.download_files.length} fichier{design.download_files.length > 1 ? 's' : ''}
+                                </span>
+                                <div className="text-[10px] text-gray-500 truncate max-w-[140px]" title={design.download_files.map((f, i) => typeof f === 'string' ? (f.split('/').pop() || f).replace(/\?.*$/, '') : `Fichier ${i + 1}`).join(', ')}>
+                                  {design.download_files.map((file, idx) => {
+                                    const name = typeof file === 'string' ? (file.split('/').pop() || file).replace(/\?.*$/, '') : `Fichier ${idx + 1}`;
+                                    return name || `Fichier ${idx + 1}`;
+                                  }).join(', ')}
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -422,14 +430,27 @@ const AdminDesigns = () => {
                               )}
                             </div>
                           </td>
-                          <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap">
-                            <div className="text-sm text-gray-600">
+                          <td className="hidden lg:table-cell px-4 py-3">
+                            <div className="text-sm text-gray-600 max-w-[200px]">
                               {(Array.isArray(design.download_files) && design.download_files.length > 0) ? (
-                                <span className="font-medium">{design.download_files.length}</span>
+                                <ul className="list-none space-y-0.5">
+                                  {design.download_files.map((file, idx) => {
+                                    const name = typeof file === 'string'
+                                      ? (file.split('/').pop() || file).replace(/\?.*$/, '')
+                                      : `Fichier ${idx + 1}`;
+                                    return (
+                                      <li key={idx} className="truncate text-xs" title={name}>
+                                        {name || `Fichier ${idx + 1}`}
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
                               ) : design.file_url ? (
-                                <span className="font-medium">1</span>
+                                <span className="text-xs truncate block" title={design.file_url}>
+                                  {(typeof design.file_url === 'string' && design.file_url.split('/').pop()) || '1 fichier'}
+                                </span>
                               ) : (
-                                <span className="text-gray-400">0</span>
+                                <span className="text-gray-400">-</span>
                               )}
                             </div>
                           </td>

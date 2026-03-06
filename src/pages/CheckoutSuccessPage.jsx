@@ -18,7 +18,10 @@ const CheckoutSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const paymentId = searchParams.get('payment_id') ?? searchParams.get('paymentId');
-  const redirectPath = searchParams.get('redirect');
+  const rawRedirect = searchParams.get('redirect');
+  const redirectPath = typeof rawRedirect === 'string' && rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
+    ? rawRedirect
+    : null;
   const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

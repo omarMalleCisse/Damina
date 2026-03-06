@@ -103,7 +103,7 @@ const DesignCard = ({ design, disableLink = false, compact = false }) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  navigate(`/designs/${design.id}/download`);
+                  navigate(`/designs/${design.id}`);
                 }}
                 className={`${compact ? 'px-1.5 py-1 text-[10px]' : 'px-3 py-2 text-sm'} rounded font-medium text-white bg-[#fd4d08] hover:bg-[#fda708] focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/40 inline-flex items-center justify-center`}
               >
