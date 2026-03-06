@@ -1,4 +1,6 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const DEFAULT_DEV = 'http://127.0.0.1:8000';
+const DEFAULT_PROD = 'https://web-production-437b.up.railway.app';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? DEFAULT_PROD : DEFAULT_DEV);
 
 let unauthorizedHandler = null;
 
