@@ -58,7 +58,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-14 sm:h-16">
           <div className="flex items-center">
             <button type="button" onClick={() => go('/')} className="flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer">
-              <img src="/assets/image/logo.png" alt="" className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 object-contain" />
+              <img src="/assets/image/logo.png" alt="" className="hidden sm:block h-9 w-9 lg:h-10 lg:w-10 object-contain" />
               <span className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#ec9c23] via-[#eb4f11] to-[#fd4d08] bg-clip-text text-transparent tracking-tight" style={{ fontFamily: "'Bungee', cursive" }}>
                 Damina
               </span>
