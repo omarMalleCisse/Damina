@@ -106,6 +106,32 @@ const DesignDownloadErrorFallback = () => (
   </div>
 );
 
+/** Fallback pour la page contact : rester sur /contact, proposer réessayer. */
+const ContactPageErrorFallback = () => (
+  <div className="min-h-[50vh] flex items-center justify-center p-4">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md text-center">
+      <p className="text-gray-700 mb-4">Une erreur s&apos;est produite lors de l&apos;envoi du message.</p>
+      <p className="text-sm text-gray-500 mb-6">Veuillez réessayer ou nous contacter par email.</p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => { window.location.reload(); }}
+          className="inline-flex px-5 py-2.5 bg-[#fd4d08] text-white font-medium rounded-lg hover:bg-[#e04300]"
+        >
+          Réessayer
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.href = '/'; }}
+          className="inline-flex px-5 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50"
+        >
+          Accueil
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
@@ -166,7 +192,7 @@ const App = () => {
           <Route path="/mes-commandes-pack" element={<MyPackOrdersPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/contact" element={<ErrorBoundary fallback={<ContactPageErrorFallback />}><ContactPage /></ErrorBoundary>} />
           <Route path="/payment/success" element={<CheckoutSuccessPage />} />
           <Route path="/payment/cancel" element={<CheckoutCancelPage />} />
           <Route path="/admin" element={<AdminRoute><ErrorBoundary fallback={<AdminDashboardErrorFallback />}><Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense></ErrorBoundary></AdminRoute>} />

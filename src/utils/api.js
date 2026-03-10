@@ -58,8 +58,11 @@ const request = async (path, { method = 'GET', body, token } = {}) => {
   if (!response.ok) {
     let message = 'Une erreur est survenue.';
     try {
-      const errorBody = await response.json();
-      message = errorBody?.detail || errorBody?.message || message;
+      const text = await response.text();
+      if (text && text.trim()) {
+        const errorBody = JSON.parse(text);
+        message = errorBody?.detail || errorBody?.message || message;
+      }
     } catch {
       // ignore JSON parse errors
     }
@@ -70,7 +73,13 @@ const request = async (path, { method = 'GET', body, token } = {}) => {
     return null;
   }
 
-  return response.json();
+  const text = await response.text();
+  if (!text || !text.trim()) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 };
 
 // Login OAuth2: le backend attend form-urlencoded avec username (email) + password
@@ -87,14 +96,23 @@ const loginRequest = async (email, password) => {
   if (!response.ok) {
     let message = 'Email ou mot de passe invalide';
     try {
-      const errorBody = await response.json();
-      message = errorBody?.detail || errorBody?.message || message;
+      const text = await response.text();
+      if (text && text.trim()) {
+        const errorBody = JSON.parse(text);
+        message = errorBody?.detail || errorBody?.message || message;
+      }
     } catch {
       // ignore
     }
     throw new Error(message);
   }
-  return response.json();
+  const text = await response.text();
+  if (!text || !text.trim()) throw new Error('Réponse serveur invalide.');
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('Réponse serveur invalide.');
+  }
 };
 
 export const authAPI = {
@@ -382,12 +400,22 @@ export const packOrdersAPI = {
       if (!res.ok) {
         let msg = 'Erreur lors de la création de la commande pack';
         try {
-          const err = await res.json();
-          msg = err?.detail || err?.message || msg;
+          const text = await res.text();
+          if (text && text.trim()) {
+            const err = JSON.parse(text);
+            msg = err?.detail || err?.message || msg;
+          }
         } catch { /* ignore */ }
         throw new Error(msg);
       }
-      return res.json();
+      if (res.status === 204) return null;
+      const text = await res.text();
+      if (!text || !text.trim()) return null;
+      try {
+        return JSON.parse(text);
+      } catch {
+        return null;
+      }
     }),
   update: (id, body, token) =>
     request(`/api/pack-orders/${id}`, { method: 'PUT', body, token }),
@@ -452,14 +480,25 @@ export const contactAPI = {
     if (!res.ok) {
       let message = 'Erreur lors de l\'envoi du message.';
       try {
-        const err = await res.json();
-        message = err?.detail || err?.message || message;
+        const text = await res.text();
+        if (text && text.trim()) {
+          const err = JSON.parse(text);
+          message = err?.detail || err?.message || message;
+        }
       } catch {
         // ignore
       }
       throw new Error(message);
     }
-    return res.json();
+    // Succès : gérer 204, corps vide ou réponse non-JSON sans lever d'erreur
+    if (res.status === 204) return null;
+    const text = await res.text();
+    if (!text || !text.trim()) return null;
+    try {
+      return JSON.parse(text);
+    } catch {
+      return null;
+    }
   }
 };
 

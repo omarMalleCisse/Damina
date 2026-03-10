@@ -70,7 +70,8 @@ const ContactPage = () => {
       setForm({ name: '', email: '', phone: '', subject: '', message: '' });
       setFieldErrors({});
     } catch (err) {
-      setError(err?.message || 'Erreur lors de l\'envoi du message. Veuillez réessayer.');
+      const msg = typeof err?.message === 'string' ? err.message : 'Erreur lors de l\'envoi du message. Veuillez réessayer.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
