@@ -17,7 +17,7 @@ const DesignCard = ({ design, disableLink = false, compact = false }) => {
   const cardContent = (
     <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
       {/* Image container */}
-      <div className={`relative ${compact ? 'aspect-[3/2]' : 'aspect-square'} overflow-hidden bg-gray-100`}>
+      <div className="relative aspect-square overflow-hidden bg-gray-100">
         <img
           src={
             getDesignMainImage(design) ||
