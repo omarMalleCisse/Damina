@@ -73,8 +73,8 @@ export const getFeatureIcon = (title = '', description = '') => {
 };
 
 const cardClassName = 'group relative bg-white rounded-2xl border border-gray-200/80 p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-[#fd4d08]/20 transition-all duration-300 text-center sm:text-left';
-const iconClassName = 'inline-flex w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#fd4d08]/15 to-[#fd4d08]/5 items-center justify-center mb-4 sm:mb-5 text-[#fd4d08] group-hover:from-[#fd4d08]/25 group-hover:to-[#fd4d08]/10 transition-colors';
-const iconSize = 'w-7 h-7 sm:w-8 sm:h-8';
+const iconClassName = 'inline-flex w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#fd4d08]/15 to-[#fd4d08]/5 items-center justify-center mb-4 sm:mb-5 text-[#fd4d08] group-hover:from-[#fd4d08]/25 group-hover:to-[#fd4d08]/10 transition-colors';
+const iconSize = 'w-8 h-8 sm:w-10 sm:h-10';
 
 const FeatureCard = ({ title, description, icon: Icon, to }) => {
   const cardLink = !to ? getCardLinkForFeature(title, description) : null;
