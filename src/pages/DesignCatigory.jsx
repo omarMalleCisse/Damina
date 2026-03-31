@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DesignsList from '../components/DesignsList/DesignsList';
 import SearchBar from '../components/SearchBar/SearchBar';
-import CategoriesBar from '../components/CategoriesBar/CategoriesBar';
 import { categoriesAPI, designsAPI } from '../utils/api';
 
 export const DesignCatigory = () => {
@@ -108,7 +107,6 @@ export const DesignCatigory = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <CategoriesBar />
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center space-x-2 text-sm text-gray-600">
