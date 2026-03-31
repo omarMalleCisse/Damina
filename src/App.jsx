@@ -20,6 +20,7 @@ import RegisterPage from './pages/RegisterPage';
 import ContactPage from './pages/ContactPage';
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 import CheckoutCancelPage from './pages/CheckoutCancelPage';
+import CategoriesBar from './components/CategoriesBar/CategoriesBar';
 import AdminRoute from './components/AdminRoute';
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -172,6 +173,7 @@ const App = () => {
           } />
           <Route path="/designs" element={
             <div>
+              <CategoriesBar />
               <SearchBar 
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
